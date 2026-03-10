@@ -185,11 +185,11 @@ html, body {
 
 **File:** `src/App.tsx`
 
-`App.tsx` is the **root shell** of the entire application. It holds the page layout, the decorative assets, and the state that controls which modal is open and which tasks are completed.
+`App.tsx` is the **root shell** of the entire application. Your starter file is an empty shell — in this step you will build the background layout from scratch.
 
-### What to write first (the layout skeleton)
+### What to write
 
-Open `src/App.tsx` and start with:
+Open `src/App.tsx` and replace its contents with:
 
 ```tsx
 import backGroundPattern from "./assets/Background Vector.svg";
@@ -477,6 +477,21 @@ const TaskCard = ({
 export default TaskCard;
 ```
 
+### Example usage
+
+```tsx
+<TaskCard
+  id={1}
+  title="Distribute Food"
+  description="Help distribute food packages to families in need during Ramadan."
+  date="Mar 15th 2026"
+  activeCrescents={4}
+  variant="wide"
+  volunteersNeeded={5}
+  onClick={() => console.log("Card clicked")}
+/>
+```
+
 ### Step C — Add cards to `App.tsx`
 
 Add these imports at the top of `App.tsx`:
@@ -743,10 +758,12 @@ Place it as the **very first child** inside the root div — before the lanterns
 
 ---
 
-## 11. Step 7 — TaskModal Component
+## 11. Step 7 — TaskModal Component *(pre-built)*
 
 **File:** `src/components/TaskModal.tsx`
 **Used in:** `App.tsx` — controlled by `openTaskId` state
+
+> **This component is pre-built.** Open `src/components/TaskModal.tsx` to read through it — no edits needed. Your job in this step is to understand how it works and then wire it into `App.tsx`.
 
 ### Purpose
 
@@ -770,22 +787,48 @@ Without portal:    With portal:
                    </body>
 ```
 
-### Step A — Import and type
+### Wire it into `App.tsx`
+
+**Step 7a** — Add the import at the top of `App.tsx`:
 
 ```tsx
-import { useEffect }     from "react";
-import { createPortal }  from "react-dom";
-import Crescent          from "../assets/Crescent.svg";
-import type { TaskCardProps } from "./TaskCard";
+import TaskModal from "./components/TaskModal";
+```
 
-type TaskModalProps = TaskCardProps & {
-  open: boolean;
-  onClose: () => void;
-  onToggleCompleted?: () => void;
+**Step 7b** — Inside the `App` function, add `openTask` and `handleToggleCompleted` after the state from Step 5b:
+
+```tsx
+const openTask = tasks.find((t) => t.id === openTaskId) ?? null;
+
+const handleToggleCompleted = (id: number) => {
+  setTasks((prev) =>
+    prev.map((t) =>
+      t.id === id
+        ? t.completed
+          ? { ...t, completed: false, completedOn: undefined }
+          : { ...t, completed: true, completedOn: t.date, activeCrescents: 5 }
+        : t
+    )
+  );
 };
 ```
 
-### Step B — Write the component
+**Step 7c** — Place `<TaskModal />` **outside** the gold border frame, still inside the root div:
+
+```tsx
+      {/* Modal — portalled to <body> so backdrop-blur works correctly */}
+      {openTask && (
+        <TaskModal
+          open={openTaskId !== null}
+          onClose={() => setOpenTaskId(null)}
+          onToggleCompleted={() => handleToggleCompleted(openTask.id)}
+          {...openTask}
+        />
+      )}
+    </div> {/* ← closes the root div */}
+```
+
+### Complete component (for reference)
 
 ```tsx
 const TaskModal = ({
@@ -937,7 +980,7 @@ const TaskModal = ({
 export default TaskModal;
 ```
 
-### Key concepts to discuss
+### Key concepts
 
 | Concept | Explanation |
 |---|---|
