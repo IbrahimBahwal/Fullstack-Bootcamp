@@ -16,11 +16,15 @@ import Header from "./components/Header";
 import Input from "./components/Input";
 import ParticleBackground from "./components/ParticleBackground";
 import TaskCard from "./components/TaskCard";
+import { useState }          from "react";
+import type { TaskCardProps } from "./components/TaskCard";
+import taskData from "./data.json";
+import type { Task } from "./api";
 
 function App() {
   // TODO (Step 5b): Add state — openTaskId and tasks
-  // const [openTaskId, setOpenTaskId] = useState<number | null>(null);
-  // const [tasks, setTasks] = useState(taskData as Task[]);
+     const [openTaskId, setOpenTaskId] = useState<number | null>(null);
+     const [tasks, setTasks] = useState(taskData as Task[]);
 
   return (
     <div className="min-h-screen bg-(--bg-dark) text-white relative overflow-hidden font-lexend flex flex-col items-center" style={{backgroundImage:`url(${backgroundPattern})`}}>
@@ -34,15 +38,11 @@ function App() {
       
       <Header/>
       <Input/>
-      <TaskCard
-       title="Distribute Food"
-       description="Help distribute food packages to families in need during Ramadan."
-       date="Mar 15th 2026"
-       activeCrescents={4}
-       variant="wide"
-       volunteersNeeded={5}
-       onClick={() => console.log("Card clicked")}
-      />
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+      {tasks.map((task) => (
+      <TaskCard key={task.id} {...task} />
+      ))}
+      </div>
 
       </div>
       
